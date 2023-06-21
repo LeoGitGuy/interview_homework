@@ -210,7 +210,7 @@ def create_segmentation_target(images: np.ndarray,
     return target
 
 
-def display_grayscale_array(array: np.ndarray, title: str = '', ax: matplotlib.axes.Axes = None) -> None:
+def display_grayscale_array(array, title: str = '', ax: matplotlib.axes.Axes = None) -> None:
     """Display the grayscale input image.
 
     Parameters:
@@ -219,7 +219,7 @@ def display_grayscale_array(array: np.ndarray, title: str = '', ax: matplotlib.a
         title: If provided, this will be added as title of the plot.
     """
     ax = ax or plt.gca()
-
+    array = array.permute(1, 2, 0).detach().numpy()
     if len(array.shape) == 3:
         array = array[..., 0]
 
@@ -234,7 +234,7 @@ def display_grayscale_array(array: np.ndarray, title: str = '', ax: matplotlib.a
         plt.show()
 
 
-def display_segmented_image(y: np.ndarray, threshold: float = 0.5,
+def display_segmented_image(y, threshold: float = 0.5,
                             input_image: np.ndarray = None,
                             alpha_input_image: float = 0.2,
                             title: str = '',
@@ -253,6 +253,7 @@ def display_segmented_image(y: np.ndarray, threshold: float = 0.5,
         alpha_input_image: If an input_image is provided, the transparency of
             the input_image.
     """
+    y = y.permute(1, 2, 0).detach().numpy()
     ax = ax or plt.gca()
 
     base_array = np.ones(
@@ -280,7 +281,7 @@ def display_segmented_image(y: np.ndarray, threshold: float = 0.5,
         plt.show()
 
 
-def plot_class_masks(y_true: np.ndarray, y_predicted: np.ndarray = None, title='') -> None:
+def plot_class_masks(y_true, y_predicted = None, title='') -> None:
     """Plot a particular view of the true vs predicted segmentation.
 
     This function separates each class into its own image and
@@ -291,6 +292,10 @@ def plot_class_masks(y_true: np.ndarray, y_predicted: np.ndarray = None, title='
         y_predicted: Predicted segmentation (image_shape, num_classes).
             If y_predicted is not provided, only the true values are displayed.
     """
+    y_true = y_true.permute(1, 2, 0).detach().numpy()
+    if y_predicted is not None:
+        y_predicted = y_predicted.permute(1, 2, 0).detach().numpy()
+
     num_rows = 2 if y_predicted is not None else 1
 
     num_classes = y_true.shape[-1]

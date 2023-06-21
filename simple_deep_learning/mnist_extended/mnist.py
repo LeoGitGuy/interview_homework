@@ -1,7 +1,8 @@
 """This module contains functions to download and process the mnist dataset.
 """
 from typing import Tuple
-
+import torch
+from torchvision import datasets, transforms
 import numpy as np
 from matplotlib import pyplot as plt
 import tensorflow as tf
@@ -15,8 +16,21 @@ def download_mnist():
     http://yann.lecun.com/exdb/mnist/
     """
 
-    (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
 
+# Define the data transformations
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.1307,), (0.3081,))
+    ])
+
+# Download and load the MNIST dataset
+    train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
+    test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+    #(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
+    train_images = train_dataset.data
+    train_labels = train_dataset.targets
+    test_images = test_dataset.data
+    test_labels = test_dataset.targets
     return (train_images, train_labels), (test_images, test_labels)
 
 
